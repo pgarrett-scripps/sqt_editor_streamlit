@@ -9,6 +9,10 @@ st.write("Sets all mobility / timscore values to zero")
 
 sqt_file = st.file_uploader("SQT File", ".sqt")
 
+pred_label = "Value to override mobility predictions (Use 'expt' to set pred to expt value)"
+ion_mobility_prediction_override_value = st.text_input(pred_label, value="expt")
+timscore_override_value = st.text_input("Value to override timscores", value=0)
+
 if st.button("Generate"):
 
     if not sqt_file:
@@ -22,8 +26,11 @@ if st.button("Generate"):
 
         for s_line in s_lines:
             for m_line in s_line.m_lines:
-                m_line.tims_score = 0
-                m_line.predicted_ook0 = 0
+                if ion_mobility_prediction_override_value == 'expt':
+                    m_line.predicted_ook0 = s_line.experimental_ook0
+                else:
+                    m_line.predicted_ook0 = float(ion_mobility_prediction_override_value)
+                m_line.tims_score = float(timscore_override_value)
 
         with st.spinner("Writing SQT File"):
             lines = []
